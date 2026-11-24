@@ -6,8 +6,8 @@ import com.hotelbooking.hotel_booking.util.Guard;
 import lombok.Getter;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class RoomInventory {
 
@@ -15,7 +15,7 @@ public class RoomInventory {
     private final String roomTypeId;
     @Getter
     private final int totalRooms;
-    private final Map<LocalDate, Integer> reservedByNight = new HashMap<>();
+    private final Map<LocalDate, Integer> reservedByNight = new ConcurrentHashMap<>();
 
     public RoomInventory(String roomTypeId, int totalRooms) {
         this.roomTypeId = Guard.notBlank(roomTypeId, "roomTypeId");

@@ -25,4 +25,8 @@ public class RoomType {
     public boolean canAccommodate(int guests) {
         return guests > 0 && guests <= maxOccupancy;
     }
+
+    public BigDecimal priceFor(DateRange stay) {
+        return basePricePerNight.multiply(BigDecimal.valueOf(stay.nights()));
+    }
 }
