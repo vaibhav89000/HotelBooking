@@ -9,6 +9,9 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
+import java.util.UUID;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -78,6 +81,42 @@ class PropertyControllerTest {
                         .content(LAKEVIEW))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.detail").value("Owner not found: missing"));
+    }
+
+    @Test
+    void searchReturnsAvailablePropertiesWithStayPrice() throws Exception {
+        String city = "City-" + UUID.randomUUID();
+        mockMvc.perform(post("/api/owners/{ownerId}/properties", createOwner())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(LAKEVIEW.replace("Bengaluru", city)))
+                .andExpect(status().isCreated());
+        LocalDate checkIn = LocalDate.now().plusDays(5);
+
+        mockMvc.perform(get("/api/properties/search")
+                        .param("city", city)
+                        .param("checkIn", checkIn.toString())
+                        .param("checkOut", checkIn.plusDays(2).toString())
+                        .param("guests", "2")
+                        .param("amenities", "WIFI,POOL")
+                        .param("minStars", "4"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].name").value("Lakeview"))
+                .andExpect(jsonPath("$[0].availableRooms[0].name").value("Deluxe"))
+                .andExpect(jsonPath("$[0].availableRooms[0].totalPrice").value(7000));
+    }
+
+    @Test
+    void searchRejectsMissingCityAndInvalidDates() throws Exception {
+        LocalDate checkIn = LocalDate.now().plusDays(5);
+
+        mockMvc.perform(get("/api/properties/search")
+                        .param("checkIn", checkIn.toString())
+                        .param("checkOut", checkIn.minusDays(1).toString())
+                        .param("guests", "2"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors.city").exists())
+                .andExpect(jsonPath("$.errors.checkOutAfterCheckIn").exists());
     }
 
     private String createOwner() throws Exception {
