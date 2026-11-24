@@ -15,7 +15,13 @@ public class MockPaymentGateway implements PaymentGateway {
 
     @Override
     public PaymentGatewayResult charge(PaymentMethodType method, BigDecimal amount, String idempotencyKey) {
-        return results.computeIfAbsent(idempotencyKey,
+        return results.computeIfAbsent("charge:" + idempotencyKey,
                 key -> PaymentGatewayResult.success("mock-" + UUID.randomUUID()));
+    }
+
+    @Override
+    public PaymentGatewayResult refund(String gatewayReference, BigDecimal amount, String idempotencyKey) {
+        return results.computeIfAbsent("refund:" + idempotencyKey,
+                key -> PaymentGatewayResult.success("mock-refund-" + UUID.randomUUID()));
     }
 }

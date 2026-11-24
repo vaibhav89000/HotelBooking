@@ -56,6 +56,18 @@ class BookingControllerTest {
     }
 
     @Test
+    void cancelsBookingThroughApi() throws Exception {
+        String booking = postCreated("/api/bookings", bookingJson(CHECK_IN, CHECK_IN.plusDays(2), 2));
+        String bookingId = JsonPath.read(booking, "$.id").toString();
+
+        mockMvc.perform(post("/api/bookings/{bookingId}/cancel", bookingId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.bookingId").value(bookingId))
+                .andExpect(jsonPath("$.status").value("CANCELLED"))
+                .andExpect(jsonPath("$.refundAmount").value(0));
+    }
+
+    @Test
     void returnsConflictWhenRoomIsTaken() throws Exception {
         postCreated("/api/bookings", bookingJson(CHECK_IN, CHECK_IN.plusDays(2), 2));
 
