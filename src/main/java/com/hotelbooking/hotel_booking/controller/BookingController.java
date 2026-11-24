@@ -3,7 +3,6 @@ package com.hotelbooking.hotel_booking.controller;
 import com.hotelbooking.hotel_booking.dto.request.CreateBookingRequest;
 import com.hotelbooking.hotel_booking.dto.response.BookingResponse;
 import com.hotelbooking.hotel_booking.dto.response.CancellationResponse;
-import com.hotelbooking.hotel_booking.model.CancellationOutcome;
 import com.hotelbooking.hotel_booking.service.BookingService;
 import com.hotelbooking.hotel_booking.service.CancellationService;
 import jakarta.validation.Valid;
@@ -38,7 +37,6 @@ public class BookingController {
 
     @PostMapping("/{bookingId}/cancel")
     public CancellationResponse cancelBooking(@PathVariable String bookingId) {
-        CancellationOutcome outcome = cancellationService.cancel(bookingId);
-        return CancellationResponse.from(outcome.booking(), outcome.payment(), outcome.refundAmount());
+        return CancellationResponse.from(cancellationService.cancel(bookingId));
     }
 }
