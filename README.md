@@ -7,10 +7,29 @@ A Spring Boot REST API for onboarding hotel properties, searching availability, 
 - Java 21
 - Spring Boot 4.2
 - Spring MVC and Jakarta Bean Validation
+- Springdoc OpenAPI 3.2.1 (OpenAPI 3 + Swagger UI)
 - Gradle
 - JUnit 5, Spring Boot Test, and MockMvc
 
 The current implementation uses in-memory repositories and a mock payment gateway so the booking lifecycle can be exercised without external infrastructure.
+
+## API documentation
+
+The API contract is generated from the Spring MVC controllers and request/response DTOs using Springdoc OpenAPI.
+
+Start the application:
+
+```bash
+./gradlew bootRun
+```
+
+Then open:
+
+- Swagger UI: http://localhost:8080/swagger-ui.html
+- OpenAPI JSON: http://localhost:8080/v3/api-docs
+- OpenAPI YAML: http://localhost:8080/v3/api-docs.yaml
+
+Swagger UI lets you inspect the endpoints, view generated request/response schemas, and execute API calls against the local application. Bean Validation constraints are reflected in the generated schemas.
 
 ## Features
 
@@ -175,6 +194,7 @@ The response includes `bookingId`, `status`, `refundAmount`, and `paymentId`. Ca
 
 ```text
 src/main/java/com/hotelbooking/hotel_booking/
+  config/           API documentation configuration
   controller/       REST controllers
   dto/              Request and response models
   enums/            Booking, payment, and property enums
